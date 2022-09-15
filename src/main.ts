@@ -3,7 +3,7 @@ import express from 'express';
 import * as IMAP from './IMAP';
 import * as SMTP from './SMTP';
 import * as Contacts from './Contacts';
-import { serverInfo } from './ServerInfo';
+import { serverInfo } from './serverInfo';
 
 const app = express();
 
