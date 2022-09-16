@@ -1,5 +1,5 @@
 import Mail from 'nodemailer/lib/mailer';
-import nodemailer, { SendMailOptions, SentMessageInfo } from 'nodemailer';
+import nodemailer, { SendMailOptions } from 'nodemailer';
 import { IServerInfo } from './serverInfo';
 
 export class Worker {
@@ -10,15 +10,11 @@ export class Worker {
   }
 
   async sendMessage(options: SendMailOptions): Promise<string> {
-    return new Promise((resolve, reject) => {
+    try {
       const transport: Mail = nodemailer.createTransport(this.serverInfo.smtp);
-      transport.sendMail(options, (err, info: SentMessageInfo) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(info);
-        }
-      });
-    });
+      return await transport.sendMail(options);
+    } catch (err) {
+      throw err;
+    }
   }
 }

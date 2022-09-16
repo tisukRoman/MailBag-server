@@ -45,7 +45,7 @@ app.get('/mailboxes', async (_, res) => {
 app.get('/mailboxes/:mailbox', async (req, res) => {
   try {
     const imapWorker = new IMAP.Worker(serverInfo);
-    const messages = await imapWorker.listMailboxes({
+    const messages = await imapWorker.listMessages({
       mailbox: req.params.mailbox,
     });
     res.json(messages).status(200);
