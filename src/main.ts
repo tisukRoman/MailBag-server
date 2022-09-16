@@ -103,8 +103,8 @@ app.get('/contacts', async (_, res) => {
 app.post('/contacts', async (req, res) => {
   try {
     const contactsWorker = new Contacts.Worker();
-    const contacts = await contactsWorker.addContact(req.body);
-    res.json(contacts).status(200);
+    const contact = await contactsWorker.addContact(req.body);
+    res.json(contact).status(200);
   } catch (e) {
     res.send('error').status(500);
   }
