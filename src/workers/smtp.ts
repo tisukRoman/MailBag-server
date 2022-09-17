@@ -1,6 +1,6 @@
 import Mail from 'nodemailer/lib/mailer';
 import nodemailer, { SendMailOptions } from 'nodemailer';
-import { IServerInfo } from './serverInfo';
+import { IServerInfo } from '../serverInfo';
 
 export class Worker {
   private serverInfo: IServerInfo;

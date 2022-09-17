@@ -1,6 +1,6 @@
-import { IServerInfo } from './serverInfo';
+import { IServerInfo } from '../serverInfo';
 import { simpleParser, ParsedMail } from 'mailparser';
-import ImapClient from 'emailjs-imap-client';
+const ImapClient = require('emailjs-imap-client');
 
 export interface ICallOptions {
   mailbox: string;
@@ -44,15 +44,10 @@ export class Worker {
     const client = await this.connectToServer();
     const mailboxes = await client.listMailboxes();
     await client.close();
-    const finalMailboxes: IMailbox[] = [];
-    const iterateChildren = (arr: any[]) => {
-      arr.forEach((el) => {
-        finalMailboxes.push(el);
-        iterateChildren(el.children);
-      });
-    };
-    iterateChildren(mailboxes);
-    return finalMailboxes;
+    return mailboxes.children.map((m: any) => ({
+      name: m.name,
+      path: m.path,
+    }));
   }
 
   async listMessages(options: ICallOptions): Promise<IMessage[]> {

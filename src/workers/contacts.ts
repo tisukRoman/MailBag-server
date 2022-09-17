@@ -41,7 +41,7 @@ export class Worker {
     });
   }
 
-  async deleteContact(id: number): Promise<any> {
+  async deleteContact(id: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.db.remove({ _id: id }, {}, (err: Error | null, n: number) => {
         if (err) {

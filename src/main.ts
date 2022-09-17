@@ -1,8 +1,8 @@
 import path from 'path';
 import express from 'express';
-import * as IMAP from './IMAP';
-import * as SMTP from './SMTP';
-import * as Contacts from './Contacts';
+import * as IMAP from './workers/imap';
+import * as SMTP from './workers/smtp';
+import * as Contacts from './workers/contacts';
 import { serverInfo } from './serverInfo';
 
 const app = express();
@@ -22,9 +22,9 @@ app.use((_, res, next) => {
 app.use(express.json());
 
 // Serving static files from client
-app.use('/', () => {
-  express.static(path.join(__dirname, '../../client/dist'));
-});
+//app.use('/', () => {
+//  express.static(path.join(__dirname, '../../client/dist'));
+//});
 
 // Test route
 app.get('/hello', (_, res) => {
@@ -38,7 +38,8 @@ app.get('/mailboxes', async (_, res) => {
     const mailboxes = await imapWorker.listMailboxes();
     res.json(mailboxes).status(200);
   } catch (e) {
-    res.send('error').status(500);
+    console.log(e);
+    res.send(e).status(500);
   }
 });
 
@@ -50,6 +51,7 @@ app.get('/mailboxes/:mailbox', async (req, res) => {
     });
     res.json(messages).status(200);
   } catch (e) {
+    console.log(e);
     res.send('error').status(500);
   }
 });
