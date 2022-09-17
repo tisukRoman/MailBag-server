@@ -52,7 +52,7 @@ app.get('/mailboxes/:mailbox', async (req, res) => {
     res.json(messages).status(200);
   } catch (e) {
     console.log(e);
-    res.send('error').status(500);
+    res.send(e).status(500);
   }
 });
 
@@ -65,7 +65,8 @@ app.get('/messages/:mailbox/:id', async (req, res) => {
     });
     res.send(messageBody).status(200);
   } catch (e) {
-    res.send('error').status(500);
+    console.log(e);
+    res.send(e).status(500);
   }
 });
 
@@ -78,7 +79,8 @@ app.delete('/messages/:mailbox/:id', async (req, res) => {
     });
     res.send('ok').status(200);
   } catch (e) {
-    res.send('error').status(500);
+    console.log(e);
+    res.send(e).status(500);
   }
 });
 
@@ -88,6 +90,7 @@ app.post('/messages', async (req, res) => {
     await smtpWorker.sendMessage(req.body);
     res.send('ok').status(200);
   } catch (e) {
+    console.log(e);
     res.send('error').status(500);
   }
 });

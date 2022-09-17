@@ -30,62 +30,82 @@ export class Worker {
   }
 
   private async connectToServer(): Promise<any> {
-    const { host, port, auth } = this.serverInfo.imap;
-    const client = new ImapClient.default(host, port, { auth });
-    client.logLevel = client.LOG_LEVEL_NONE;
-    client.onError = (error: Error) => {
-      console.log(error);
-    };
-    await client.connect();
-    return client;
+    try {
+      const { host, port, auth } = this.serverInfo.imap;
+      const client = new ImapClient.default(host, port, { auth });
+      client.logLevel = client.LOG_LEVEL_NONE;
+      client.onError = (error: Error) => {
+        console.log(error);
+      };
+      await client.connect();
+      return client;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async listMailboxes(): Promise<IMailbox[]> {
-    const client = await this.connectToServer();
-    const mailboxes = await client.listMailboxes();
-    await client.close();
-    return mailboxes.children.map((m: any) => ({
-      name: m.name,
-      path: m.path,
-    }));
+    try {
+      const client = await this.connectToServer();
+      const mailboxes = await client.listMailboxes();
+      await client.close();
+      return mailboxes.children.map((m: any) => ({
+        name: m.name,
+        path: m.path,
+      }));
+    } catch (err) {
+      throw err;
+    }
   }
 
   async listMessages(options: ICallOptions): Promise<IMessage[]> {
-    const client = await this.connectToServer();
-    const mailbox = await client.selectMailbox(options.mailbox);
-    if (mailbox.exists === 0) {
+    try {
+      const client = await this.connectToServer();
+      const mailbox = await client.selectMailbox(options.mailbox);
+      if (mailbox.exists === 0) {
+        await client.close();
+        return [];
+      }
+      const messages = await client.listMessages(client.mailbox, '1:*', [
+        'uid',
+        'envelope',
+      ]);
       await client.close();
-      return [];
+      return messages.map((message: any) => ({
+        id: message.uid,
+        date: message.envelope.date,
+        from: message.envelope.from[0].address,
+        subject: message.envelope.subject,
+      })) as IMessage[];
+    } catch (err) {
+      throw err;
     }
-    const messages = await client.listMessages(client.mailbox, '1:*', [
-      'uid',
-      'envelope',
-    ]);
-    await client.close();
-    return messages.map((message: any) => ({
-      id: message.uid,
-      date: message.envelope.date,
-      from: message.envelope.from[0].address,
-      subject: message.envelope.subject,
-    })) as IMessage[];
   }
 
   async getMessageBody(options: ICallOptions): Promise<string> {
-    const client = await this.connectToServer();
-    const messages: any[] = await client.listMessages(
-      options.mailbox,
-      options.id,
-      ['body[]'],
-      { byUid: true }
-    );
-    const parsed: ParsedMail = await simpleParser(messages[0]['body[]']);
-    await client.close();
-    return parsed.text as string;
+    try {
+      const client = await this.connectToServer();
+      const messages: any[] = await client.listMessages(
+        options.mailbox,
+        options.id,
+        ['body[]'],
+        { byUid: true }
+      );
+      const parsed: ParsedMail = await simpleParser(messages[0]['body[]']);
+      await client.close();
+      return parsed.text as string;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async deleteMessage(options: ICallOptions): Promise<void> {
-    const client = await this.connectToServer();
-    await client.deleteMessage(options.mailbox, options.id, { byUid: true });
-    await client.close();
+    try {
+      const client = await this.connectToServer();
+      await client.deleteMessages(options.mailbox, options.id, { byUid: true });
+      await client.close();
+    } catch (err) {
+      throw err;
+    }
   }
 }
