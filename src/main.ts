@@ -115,6 +115,16 @@ app.post('/contacts', async (req, res) => {
   }
 });
 
+app.put('/contacts/:id', async (req, res) => {
+  try {
+    const contactsWorker = new Contacts.Worker();
+    const contact = await contactsWorker.updateContact(req.params.id, req.body);
+    res.json(contact).status(200);
+  } catch (e) {
+    res.send('error').status(500);
+  }
+});
+
 app.delete('/contacts/:id', async (req, res) => {
   try {
     const contactsWorker = new Contacts.Worker();

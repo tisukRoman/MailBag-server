@@ -41,6 +41,23 @@ export class Worker {
     });
   }
 
+  async updateContact(id: string, contact: IContact): Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.db.update(
+        { _id: id },
+        contact,
+        {},
+        (err: Error | null, numberOfUpdated: number) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(numberOfUpdated);
+          }
+        }
+      );
+    });
+  }
+
   async deleteContact(id: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.db.remove({ _id: id }, {}, (err: Error | null, n: number) => {
