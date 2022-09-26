@@ -66,10 +66,12 @@ export class Worker {
         await client.close();
         return [];
       }
-      const messages = await client.listMessages(client.mailbox, '1:*', [
+      const messages = await client.listMessages(client.mailbox, '1:20', [
         'uid',
         'envelope',
-      ]);
+      ], {
+
+      });
       await client.close();
       return messages.map((message: any) => ({
         id: message.uid,
