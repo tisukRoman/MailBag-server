@@ -93,7 +93,7 @@ export class Worker {
       );
       const parsed: ParsedMail = await simpleParser(messages[0]['body[]']);
       await client.close();
-      return parsed.text as string;
+      return parsed.html as string;
     } catch (err) {
       throw err;
     }
